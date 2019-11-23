@@ -15,7 +15,8 @@ import { useDispatch } from 'react-redux'
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
+    margin: theme.spacing()
   }
 }))
 
@@ -28,13 +29,15 @@ const defaultTransaction = {
 export default function TransactionInput() {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const [state, setState] = useState(defaultTransaction)
+  const [transaction, setState] = useState(defaultTransaction)
 
   const submit = e => {
     e.preventDefault()
     dispatch({
       type: 'transaction / ADD',
-      payload: state
+      payload: {
+        transaction
+      }
     })
     setState(defaultTransaction)
   }
@@ -49,8 +52,8 @@ export default function TransactionInput() {
               <Select
                 labelId='demo-simple-select-label'
                 fullWidth
-                value={state.type}
-                onChange={e => setState({ ...state, type: e.target.value })}
+                value={transaction.type}
+                onChange={e => setState({ ...transaction, type: e.target.value })}
               >
                 <MenuItem value={'ATM'}>ATM</MenuItem>
                 <MenuItem value={'POS'}>POS</MenuItem>
@@ -63,8 +66,8 @@ export default function TransactionInput() {
               fullWidth
               name='card'
               label='Card'
-              value={state.card}
-              onChange={e => setState({ ...state, card: e.target.value })}
+              value={transaction.card}
+              onChange={e => setState({ ...transaction, card: e.target.value })}
             />
           </Grid>
           <Grid item xs={12} sm={2}>
@@ -74,8 +77,8 @@ export default function TransactionInput() {
               label='Amount'
               type='number'
               autoComplete={'off'}
-              value={state.amount}
-              onChange={e => setState({ ...state, amount: e.target.value })}
+              value={transaction.amount}
+              onChange={e => setState({ ...transaction, amount: e.target.value })}
               startAdornment={<InputAdornment position='start'>$</InputAdornment>}
             />
           </Grid>

@@ -4,6 +4,7 @@ import Typography from '@material-ui/core/Typography'
 import { Provider } from 'react-redux'
 
 import TransactionInput from './components/TransactionInput'
+import TransactionGenerator from './components/TransactionGenerator'
 import { initStore } from './redux/store'
 
 const store = initStore()
@@ -17,6 +18,9 @@ function App() {
         </Grid>
         <Grid item xs={10}>
           <TransactionInput />
+        </Grid>
+        <Grid item xs={10}>
+          <TransactionGenerator />
         </Grid>
       </Grid>
     </Provider>
