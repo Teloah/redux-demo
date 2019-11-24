@@ -1,4 +1,6 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux'
+import createSagaMiddleware from 'redux-saga'
+
 import transactionsReducer, * as fromTransactions from './transactions'
 import uiReducer, * as fromUI from './ui'
 
@@ -17,13 +19,15 @@ const logger = store => next => action => {
   return result
 }
 
-const storeWithMiddleware = applyMiddleware(logger, fromTransactions.loadingMiddleware)(createStore)
-
 export function initStore() {
+  const sagaMiddleware = createSagaMiddleware()
+  const storeWithMiddleware = applyMiddleware(logger, sagaMiddleware)(createStore)
   const store = storeWithMiddleware(
     reducer,
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
   )
+
+  sagaMiddleware.run(fromTransactions.transactionsRootSaga)
 
   return store
 }

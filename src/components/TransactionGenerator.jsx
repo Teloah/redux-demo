@@ -30,8 +30,8 @@ export default function TransactionGenerator() {
           </Button>
         </Grid>
         <Grid item xs={3}>
-          <Button variant='contained' onClick={() => dispatch(generateTransactions(100))}>
-            Generate 100
+          <Button variant='contained' onClick={() => dispatch(generateTransactions(20))}>
+            Generate 20
           </Button>
         </Grid>
       </Grid>

@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 import numeral from 'numeral'
 import { createSelector } from 'reselect'
+import { all, fork, takeEvery, call, put } from 'redux-saga/effects'
 
 import { sleep } from '../utils/sleep'
 import { startLoading, endLoading } from './ui'
@@ -66,25 +67,20 @@ export const getTransactionsByType = type => selectors[type.toLowerCase()].list
 
 export const getTransactionAmountByType = type => selectors[type.toLowerCase()].amount
 
-export const loadingMiddleware = store => next => action => {
-  if (action.type !== GENERATE_TRANSACTIONS) return next(action)
-
-  console.log('generating in loadingMiddleware', action)
-
-  const generateTransaction = () => {
-    next(addTransaction(generator()))
+function* generateWorker(action) {
+  console.log('generating in saga', action)
+  yield put(startLoading())
+  for (let i = 0; i < action.meta.count; i++) {
+    yield call(sleep, 50)
+    yield put(addTransaction(generator()))
   }
+  yield put(endLoading())
+}
 
-  const generate = async count => {
-    next(startLoading())
-    for (let i = 0; i < count; i++) {
-      await sleep(50)
-      generateTransaction()
-    }
-    next(endLoading())
-  }
+function* generateWatcher() {
+  yield takeEvery(GENERATE_TRANSACTIONS, generateWorker)
+}
 
-  generate(action.meta.count)
-
-  return next(action)
+export function* transactionsRootSaga() {
+  yield all([fork(generateWatcher)])
 }
