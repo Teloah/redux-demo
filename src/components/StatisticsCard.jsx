@@ -9,6 +9,7 @@ export default function StatisticsCard({ type }) {
   const list = useSelector(getTransactionsByType(type))
   const amount = useSelector(getTransactionAmountByType(type))
   const selected = useSelector(getSelected)
+
   const dispatch = useDispatch()
 
   const cardSelected = type => {
