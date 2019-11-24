@@ -21,8 +21,8 @@ export default function TransactionGenerator() {
     dispatch(addTransaction(generator()))
   }
 
-  const generate100 = () => {
-    for (let i = 0; i < 100; i++) {
+  const generate = count => {
+    for (let i = 0; i < count; i++) {
       generateTransaction()
     }
   }
@@ -36,7 +36,7 @@ export default function TransactionGenerator() {
           </Button>
         </Grid>
         <Grid item xs={3}>
-          <Button variant='contained' onClick={generate100}>
+          <Button variant='contained' onClick={() => generate(100)}>
             Generate 100
           </Button>
         </Grid>
