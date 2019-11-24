@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import numeral from 'numeral'
 import { createSelector } from 'reselect'
-import { all, fork, takeEvery, retry, put, call } from 'redux-saga/effects'
+import { all, fork, takeEvery, retry, put, call, race } from 'redux-saga/effects'
 import faker from 'faker'
 
 import { sleep } from '../utils/sleep'
@@ -115,7 +115,7 @@ function* nameLoader(card) {
     type: 'transactions / cardholder',
     payload: { record }
   })
-  const ratings = yield all([
+  const ratings = yield race([
     call(firstCreditAgency, record),
     call(secondCreditAgency, record),
     call(bestCreditAgency, record)
