@@ -1,20 +1,30 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { Grid, Typography, ButtonBase } from '@material-ui/core'
+import { getTransactionsByType, getTransactionAmountByType, getSelected } from '../redux/store'
+import { typeSelected } from '../redux/ui'
 
-import { getTransactionsByType, getTransactionAmountByType } from '../redux/transactions'
-
-export default function StatisticsCard({ type, selected, onSelected }) {
+export default function StatisticsCard({ type }) {
   console.log('repainting', type)
-
   const list = useSelector(getTransactionsByType(type))
   const amount = useSelector(getTransactionAmountByType(type))
+  const selected = useSelector(getSelected)
+  const dispatch = useDispatch()
+
+  const cardSelected = type => {
+    dispatch(typeSelected(type))
+  }
+
+  const isSelected = selected === type
 
   return (
     <Grid container>
       <Grid item xs={12}>
-        <ButtonBase onClick={() => onSelected(type)}>
-          <Typography color={selected === type ? 'primary' : 'textPrimary'} variant='h4'>
+        <ButtonBase onClick={() => cardSelected(type)}>
+          <Typography
+            color={isSelected ? 'primary' : 'textPrimary'}
+            variant={isSelected ? 'h3' : 'h4'}
+          >
             {type}
           </Typography>
         </ButtonBase>

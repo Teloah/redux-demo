@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Grid, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -12,23 +12,19 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function Statistics() {
-  const [selected, setSelected] = useState('')
   const classes = useStyles()
-  const cardSelected = type => {
-    setSelected(type)
-  }
 
   return (
     <Paper className={classes.paper}>
       <Grid container justify='center' spacing={4}>
         <Grid item xs={4}>
-          <StatisticsCard type='atm' selected={selected} onSelected={cardSelected} />
+          <StatisticsCard type='ATM' />
         </Grid>
         <Grid item xs={4}>
-          <StatisticsCard type='pos' selected={selected} onSelected={cardSelected} />
+          <StatisticsCard type='POS' />
         </Grid>
         <Grid item xs={4}>
-          <StatisticsCard type='ecomm' selected={selected} onSelected={cardSelected} />
+          <StatisticsCard type='EComm' />
         </Grid>
       </Grid>
     </Paper>

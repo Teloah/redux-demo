@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux'
 import numeral from 'numeral'
+import { createSelector } from 'reselect'
 
 const ADD_TRANSACTION = 'transactions / ADD'
 
@@ -26,11 +27,29 @@ export default combineReducers({
   ecomm: createTransactionReducer('EComm')
 })
 
-export const getTransactionsByType = type => ({ transactions }) => transactions[type]
-export const getTransactionAmountByType = type => ({ transactions }) => {
-  console.log('recalculating', type)
-  const amnt = transactions[type].reduce((result, transaction) => {
-    return result + +transaction.amount
-  }, 0)
-  return numeral(amnt).format('0.00')
+const createSelectors = type => {
+  const listSelector = state => state[type]
+
+  const amountSelector = createSelector(listSelector, list => {
+    console.log('recalculating', type)
+    const amnt = list.reduce((result, transaction) => {
+      return result + +transaction.amount
+    }, 0)
+    return numeral(amnt).format('0.00')
+  })
+
+  return {
+    list: listSelector,
+    amount: amountSelector
+  }
 }
+
+const selectors = {
+  atm: createSelectors('atm'),
+  pos: createSelectors('pos'),
+  ecomm: createSelectors('ecomm')
+}
+
+export const getTransactionsByType = type => selectors[type.toLowerCase()].list
+
+export const getTransactionAmountByType = type => selectors[type.toLowerCase()].amount
