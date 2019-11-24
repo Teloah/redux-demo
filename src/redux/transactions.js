@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux'
+import numeral from 'numeral'
 
 const ADD_TRANSACTION = 'transactions / ADD'
 
@@ -24,3 +25,12 @@ export default combineReducers({
   pos: createTransactionReducer('POS'),
   ecomm: createTransactionReducer('EComm')
 })
+
+export const getTransactionsByType = type => ({ transactions }) => transactions[type]
+export const getTransactionAmountByType = type => ({ transactions }) => {
+  console.log('recalculating', type)
+  const amnt = transactions[type].reduce((result, transaction) => {
+    return result + +transaction.amount
+  }, 0)
+  return numeral(amnt).format('0.00')
+}

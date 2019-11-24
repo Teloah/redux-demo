@@ -1,20 +1,14 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Grid, Typography, ButtonBase } from '@material-ui/core'
-import numeral from 'numeral'
+
+import { getTransactionsByType, getTransactionAmountByType } from '../redux/transactions'
 
 export default function StatisticsCard({ type, selected, onSelected }) {
   console.log('repainting', type)
 
-  const list = useSelector(state => state.transactions[type])
-
-  const amount = useSelector(state => {
-    console.log('recalculating', type)
-    const amnt = state.transactions[type].reduce((result, transaction) => {
-      return result + +transaction.amount
-    }, 0)
-    return numeral(amnt).format('0.00')
-  })
+  const list = useSelector(getTransactionsByType(type))
+  const amount = useSelector(getTransactionAmountByType(type))
 
   return (
     <Grid container>
