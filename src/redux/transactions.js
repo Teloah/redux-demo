@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import numeral from 'numeral'
 import { createSelector } from 'reselect'
-import { all, fork, takeEvery, put } from 'redux-saga/effects'
+import { all, fork, takeEvery, retry, put } from 'redux-saga/effects'
 import faker from 'faker'
 
 import { sleep } from '../utils/sleep'
@@ -81,9 +81,10 @@ const flakyGenerator = () => {
 function* nameLoader(card) {
   yield sleep(150)
   const name = faker.name.findName()
+  const account = faker.finance.account()
   yield put({
     type: 'transactions / cardholder',
-    payload: { card, name }
+    payload: { card, name, account }
   })
 }
 
@@ -94,7 +95,7 @@ function* generateWorker(action) {
     yield sleep(50)
 
     try {
-      const transaction = yield flakyGenerator()
+      const transaction = yield retry(2, 50, flakyGenerator)
       yield put(addTransaction(transaction))
       yield fork(nameLoader, transaction.card)
     } catch (e) {
