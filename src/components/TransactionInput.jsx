@@ -7,8 +7,7 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem,
-  InputAdornment
+  MenuItem
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { useDispatch } from 'react-redux'
@@ -79,7 +78,6 @@ export default function TransactionInput() {
               autoComplete={'off'}
               value={transaction.amount}
               onChange={e => setState({ ...transaction, amount: e.target.value })}
-              startAdornment={<InputAdornment position='start'>$</InputAdornment>}
             />
           </Grid>
           <Grid item xs={12} sm={2}>

@@ -1,8 +1,9 @@
-import { createStore } from 'redux'
+import { createStore, combineReducers } from 'redux'
+import transactionsReducer from './transactions'
 
-const reducer = (state, action) => {
-  return action.type
-}
+const reducer = combineReducers({
+  transactions: transactionsReducer
+})
 
 export function initStore() {
   const store = createStore(
