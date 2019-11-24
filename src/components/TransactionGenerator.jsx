@@ -4,9 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { useDispatch } from 'react-redux'
 
 import { generator } from '../utils/generator'
-import { sleep } from '../utils/sleep'
-import { addTransaction } from '../redux/transactions'
-import { startLoading, endLoading } from '../redux/ui'
+import { addTransaction, generateTransactions } from '../redux/transactions'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -23,15 +21,6 @@ export default function TransactionGenerator() {
     dispatch(addTransaction(generator()))
   }
 
-  const generate = async count => {
-    dispatch(startLoading())
-    for (let i = 0; i < count; i++) {
-      await sleep(50)
-      generateTransaction()
-    }
-    dispatch(endLoading())
-  }
-
   return (
     <Paper className={classes.paper}>
       <Grid container justify='center' spacing={4}>
@@ -41,7 +30,7 @@ export default function TransactionGenerator() {
           </Button>
         </Grid>
         <Grid item xs={3}>
-          <Button variant='contained' onClick={() => generate(100)}>
+          <Button variant='contained' onClick={() => dispatch(generateTransactions(100))}>
             Generate 100
           </Button>
         </Grid>

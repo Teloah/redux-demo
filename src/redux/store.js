@@ -17,17 +17,7 @@ const logger = store => next => action => {
   return result
 }
 
-const logger2 = store => next => action => {
-  console.group('logger 2')
-  console.log('state before 2:', store.getState())
-  console.log('action 2:', action)
-  const result = next(action)
-  console.log('state after 2:', store.getState())
-  console.groupEnd()
-  return result
-}
-
-const storeWithMiddleware = applyMiddleware(logger, logger2)(createStore)
+const storeWithMiddleware = applyMiddleware(logger, fromTransactions.loadingMiddleware)(createStore)
 
 export function initStore() {
   const store = storeWithMiddleware(

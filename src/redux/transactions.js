@@ -2,12 +2,24 @@ import { combineReducers } from 'redux'
 import numeral from 'numeral'
 import { createSelector } from 'reselect'
 
+import { sleep } from '../utils/sleep'
+import { startLoading, endLoading } from './ui'
+import { generator } from '../utils/generator'
+
 const ADD_TRANSACTION = 'transactions / ADD'
+const GENERATE_TRANSACTIONS = 'transactions / generate'
 
 export const addTransaction = transaction => ({
   type: ADD_TRANSACTION,
   payload: {
     transaction
+  }
+})
+
+export const generateTransactions = count => ({
+  type: GENERATE_TRANSACTIONS,
+  meta: {
+    count
   }
 })
 
@@ -53,3 +65,26 @@ const selectors = {
 export const getTransactionsByType = type => selectors[type.toLowerCase()].list
 
 export const getTransactionAmountByType = type => selectors[type.toLowerCase()].amount
+
+export const loadingMiddleware = store => next => action => {
+  if (action.type !== GENERATE_TRANSACTIONS) return next(action)
+
+  console.log('generating in loadingMiddleware', action)
+
+  const generateTransaction = () => {
+    next(addTransaction(generator()))
+  }
+
+  const generate = async count => {
+    next(startLoading())
+    for (let i = 0; i < count; i++) {
+      await sleep(50)
+      generateTransaction()
+    }
+    next(endLoading())
+  }
+
+  generate(action.meta.count)
+
+  return next(action)
+}
