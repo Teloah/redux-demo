@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import numeral from 'numeral'
-import { createSelector } from 'reselect'
+// import { createSelector } from 'reselect'
 
 const ADD_TRANSACTION = 'transactions / ADD'
 
@@ -30,17 +30,26 @@ export default combineReducers({
 const createSelectors = type => {
   const listSelector = state => state[type]
 
-  const amountSelector = createSelector(listSelector, list => {
+  // const amountSelector = createSelector(listSelector, list => {
+  //   console.log('recalculating', type)
+  //   const amnt = list.reduce((result, transaction) => {
+  //     return result + +transaction.amount
+  //   }, 0)
+  //   return numeral(amnt).format('0.00')
+  // })
+
+  const forcedAmountSelector = state => {
     console.log('recalculating', type)
+    const list = state[type]
     const amnt = list.reduce((result, transaction) => {
       return result + +transaction.amount
     }, 0)
     return numeral(amnt).format('0.00')
-  })
+  }
 
   return {
     list: listSelector,
-    amount: amountSelector
+    amount: forcedAmountSelector
   }
 }
 
