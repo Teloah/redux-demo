@@ -6,18 +6,11 @@ const END_LOADING = 'ui / loading end'
 
 export const typeSelected = type => ({
   type: TYPE_SELECTED,
-  payload: {
-    type
-  }
+  payload: { type }
 })
 
-export const startLoading = () => ({
-  type: START_LOADING
-})
-
-export const endLoading = () => ({
-  type: END_LOADING
-})
+export const startLoading = () => ({ type: START_LOADING })
+export const endLoading = () => ({ type: END_LOADING })
 
 const selectedReducer = (state = '', action) => {
   switch (action.type) {

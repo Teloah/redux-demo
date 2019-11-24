@@ -67,12 +67,28 @@ export const getTransactionsByType = type => selectors[type.toLowerCase()].list
 
 export const getTransactionAmountByType = type => selectors[type.toLowerCase()].amount
 
+const flakyGenerator = () => {
+  return new Promise((resolve, reject) => {
+    if (Math.random() > 0.1) {
+      resolve(generator())
+    } else {
+      reject(new Error('Failed to generate transaction'))
+    }
+  })
+}
+
 function* generateWorker(action) {
   console.log('generating in saga', action)
   yield put(startLoading())
   for (let i = 0; i < action.meta.count; i++) {
     yield sleep(50)
-    yield put(addTransaction(generator()))
+
+    try {
+      const transaction = yield flakyGenerator()
+      yield put(addTransaction(transaction))
+    } catch (e) {
+      yield put({ type: 'transactions / FAILED', error: e.message })
+    }
   }
   yield put(endLoading())
 }
