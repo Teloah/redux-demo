@@ -10,9 +10,7 @@ const reducer = combineReducers({
 const logger = store => next => action => {
   console.group('logger')
   console.log('state before:', store.getState())
-  console.log('action:', action)
-  console.log('action.amount:', action.payload.transaction.amount)
-  action.payload.transaction.amount = 1
+  console.log('action:', JSON.stringify(action, null, 2))
   const result = next(action)
   console.log('state after:', store.getState())
   console.groupEnd()
