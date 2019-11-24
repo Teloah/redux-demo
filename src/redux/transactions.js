@@ -2,6 +2,7 @@ import { combineReducers } from 'redux'
 import numeral from 'numeral'
 import { createSelector } from 'reselect'
 import { all, fork, takeEvery, put } from 'redux-saga/effects'
+import faker from 'faker'
 
 import { sleep } from '../utils/sleep'
 import { startLoading, endLoading } from './ui'
@@ -77,6 +78,15 @@ const flakyGenerator = () => {
   })
 }
 
+function* nameLoader(card) {
+  yield sleep(150)
+  const name = faker.name.findName()
+  yield put({
+    type: 'transactions / cardholder',
+    payload: { card, name }
+  })
+}
+
 function* generateWorker(action) {
   console.log('generating in saga', action)
   yield put(startLoading())
@@ -86,6 +96,7 @@ function* generateWorker(action) {
     try {
       const transaction = yield flakyGenerator()
       yield put(addTransaction(transaction))
+      yield fork(nameLoader, transaction.card)
     } catch (e) {
       yield put({ type: 'transactions / FAILED', error: e.message })
     }
