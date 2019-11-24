@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import numeral from 'numeral'
 import { createSelector } from 'reselect'
-import { all, fork, takeEvery, retry, put } from 'redux-saga/effects'
+import { all, fork, takeEvery, retry, put, call } from 'redux-saga/effects'
 import faker from 'faker'
 
 import { sleep } from '../utils/sleep'
@@ -78,13 +78,51 @@ const flakyGenerator = () => {
   })
 }
 
+async function firstCreditAgency(record) {
+  await sleep(Math.random() * 200)
+  return {
+    account: record.account,
+    name: record.name,
+    agency: 'First Credit',
+    rating: Math.random() * 100
+  }
+}
+async function secondCreditAgency(record) {
+  await sleep(Math.random() * 200)
+  return {
+    account: record.account,
+    name: record.name,
+    agency: 'Second Credit',
+    rating: Math.random() * 150
+  }
+}
+async function bestCreditAgency(record) {
+  await sleep(Math.random() * 200)
+  return {
+    account: record.account,
+    name: record.name,
+    agency: 'Best Credit',
+    rating: Math.random() * 300
+  }
+}
+
 function* nameLoader(card) {
   yield sleep(150)
   const name = faker.name.findName()
   const account = faker.finance.account()
+  const record = { card, name, account }
   yield put({
     type: 'transactions / cardholder',
-    payload: { card, name, account }
+    payload: { record }
+  })
+  const ratings = yield all([
+    call(firstCreditAgency, record),
+    call(secondCreditAgency, record),
+    call(bestCreditAgency, record)
+  ])
+  yield put({
+    type: 'transactions / ratings',
+    payload: { ratings }
   })
 }
 
