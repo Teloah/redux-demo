@@ -1,14 +1,14 @@
 import { combineReducers } from 'redux'
 import numeral from 'numeral'
 import { createSelector } from 'reselect'
-import { all, fork, takeEvery, call, put } from 'redux-saga/effects'
+import { all, fork, takeEvery, put } from 'redux-saga/effects'
 
 import { sleep } from '../utils/sleep'
 import { startLoading, endLoading } from './ui'
 import { generator } from '../utils/generator'
 
-const ADD_TRANSACTION = 'transactions / ADD'
-const GENERATE_TRANSACTIONS = 'transactions / generate'
+export const ADD_TRANSACTION = 'transactions / ADD'
+export const GENERATE_TRANSACTIONS = 'transactions / generate'
 
 export const addTransaction = transaction => ({
   type: ADD_TRANSACTION,
@@ -71,7 +71,7 @@ function* generateWorker(action) {
   console.log('generating in saga', action)
   yield put(startLoading())
   for (let i = 0; i < action.meta.count; i++) {
-    yield call(sleep, 50)
+    yield sleep(50)
     yield put(addTransaction(generator()))
   }
   yield put(endLoading())
