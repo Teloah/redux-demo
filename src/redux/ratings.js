@@ -1,4 +1,4 @@
-import { all, put, fork, select, throttle } from 'redux-saga/effects'
+import { all, put, fork, select, debounce } from 'redux-saga/effects'
 import { RATINGS, BEST_RATING } from './transactions'
 import { getRatings } from './store'
 
@@ -19,7 +19,7 @@ function* ratingsWorker() {
 }
 
 function* ratingsWatcher() {
-  yield throttle(1000, RATINGS, ratingsWorker)
+  yield debounce(500, RATINGS, ratingsWorker)
 }
 
 export function* ratingsRootSaga() {
