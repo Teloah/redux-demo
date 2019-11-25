@@ -12,6 +12,7 @@ export const ADD_TRANSACTION = 'transactions / ADD'
 export const GENERATE_TRANSACTIONS = 'transactions / generate'
 export const RATINGS = 'transactions / ratings'
 export const CARDHOLDER = 'transactions / cardholder'
+export const BEST_RATING = 'transactions / best rating'
 
 export const addTransaction = transaction => ({
   type: ADD_TRANSACTION,
@@ -52,7 +53,7 @@ const cardholdersReducer = (state = {}, action) => {
   }
 }
 
-const ratingsReducer = (state = {}, action) => {
+const ratingsListReducer = (state = {}, action) => {
   switch (action.type) {
     case RATINGS:
       return { ...state, [action.payload.account]: action.payload.ratings }
@@ -60,6 +61,20 @@ const ratingsReducer = (state = {}, action) => {
       return state
   }
 }
+
+const ratingsBestReducer = (state = {}, action) => {
+  switch (action.type) {
+    case BEST_RATING:
+      return action.payload.rating
+    default:
+      return state
+  }
+}
+
+const ratingsReducer = combineReducers({
+  list: ratingsListReducer,
+  best: ratingsBestReducer
+})
 
 export default combineReducers({
   lists: listsReducer,
@@ -94,16 +109,8 @@ export const getTransactionsByType = type => selectors[type.toLowerCase()].list
 
 export const getTransactionAmountByType = type => selectors[type.toLowerCase()].amount
 
-export const getRatings = ({ ratings }) => ratings
-
-export const getBestRating = createSelector(getRatings, ratings => {
-  return Object.keys(ratings).reduce((result, account) => {
-    const bestRating = ratings[account].reduce((result, rating) => {
-      return result.rating > rating.rating ? result : rating
-    }, {})
-    return result.rating > bestRating.rating ? result : bestRating
-  }, {})
-})
+export const getRatings = ({ ratings }) => ratings.list
+export const getBestRating = ({ ratings }) => ratings.best
 
 const flakyGenerator = () => {
   return new Promise((resolve, reject) => {
