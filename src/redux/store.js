@@ -41,10 +41,10 @@ export function initStore() {
 export const getTransactionsByType = type => ({ transactions }) => {
   return fromTransactions.getTransactionsByType(type)(transactions)
 }
-
 export const getTransactionAmountByType = type => ({ transactions }) => {
   return fromTransactions.getTransactionAmountByType(type)(transactions)
 }
+export const getBestRating = ({ transactions }) => fromTransactions.getBestRating(transactions)
 
 export const getSelected = ({ ui }) => fromUI.getSelected(ui)
 export const getIsLoading = ({ ui }) => fromUI.getIsLoading(ui)

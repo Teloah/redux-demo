@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import {
   Button,
-  Paper,
   Grid,
   TextField,
   FormControl,
@@ -9,15 +8,9 @@ import {
   Select,
   MenuItem
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
 import { useDispatch } from 'react-redux'
 
-const useStyles = makeStyles(theme => ({
-  paper: {
-    padding: theme.spacing(2),
-    margin: theme.spacing()
-  }
-}))
+import Section from './Section'
 
 const defaultTransaction = {
   type: 'POS',
@@ -26,7 +19,6 @@ const defaultTransaction = {
 }
 
 export default function TransactionInput() {
-  const classes = useStyles()
   const dispatch = useDispatch()
   const [transaction, setState] = useState(defaultTransaction)
 
@@ -42,7 +34,7 @@ export default function TransactionInput() {
   }
 
   return (
-    <Paper className={classes.paper}>
+    <Section>
       <form onSubmit={submit}>
         <Grid container justify='center' alignItems='center' spacing={4}>
           <Grid item xs={12} sm={2}>
@@ -87,6 +79,6 @@ export default function TransactionInput() {
           </Grid>
         </Grid>
       </form>
-    </Paper>
+    </Section>
   )
 }

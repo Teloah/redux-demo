@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import numeral from 'numeral'
 import { createSelector } from 'reselect'
-import { all, fork, takeEvery, retry, put, call, race } from 'redux-saga/effects'
+import { all, fork, takeEvery, retry, put, call } from 'redux-saga/effects'
 import faker from 'faker'
 
 import { sleep } from '../utils/sleep'
@@ -10,6 +10,8 @@ import { generator } from '../utils/generator'
 
 export const ADD_TRANSACTION = 'transactions / ADD'
 export const GENERATE_TRANSACTIONS = 'transactions / generate'
+export const RATINGS = 'transactions / ratings'
+export const CARDHOLDER = 'transactions / cardholder'
 
 export const addTransaction = transaction => ({
   type: ADD_TRANSACTION,
@@ -35,14 +37,38 @@ const createTransactionReducer = type => (state = [], action) => {
   }
 }
 
-export default combineReducers({
+const listsReducer = combineReducers({
   atm: createTransactionReducer('ATM'),
   pos: createTransactionReducer('POS'),
   ecomm: createTransactionReducer('EComm')
 })
 
+const cardholdersReducer = (state = {}, action) => {
+  switch (action.type) {
+    case CARDHOLDER:
+      return { ...state, [action.payload.record.account]: action.payload.record }
+    default:
+      return state
+  }
+}
+
+const ratingsReducer = (state = {}, action) => {
+  switch (action.type) {
+    case RATINGS:
+      return { ...state, [action.payload.account]: action.payload.ratings }
+    default:
+      return state
+  }
+}
+
+export default combineReducers({
+  lists: listsReducer,
+  cardholders: cardholdersReducer,
+  ratings: ratingsReducer
+})
+
 const createSelectors = type => {
-  const listSelector = state => state[type]
+  const listSelector = state => state.lists[type]
 
   const amountSelector = createSelector(listSelector, list => {
     console.log('recalculating', type)
@@ -67,6 +93,17 @@ const selectors = {
 export const getTransactionsByType = type => selectors[type.toLowerCase()].list
 
 export const getTransactionAmountByType = type => selectors[type.toLowerCase()].amount
+
+export const getRatings = ({ ratings }) => ratings
+
+export const getBestRating = createSelector(getRatings, ratings => {
+  return Object.keys(ratings).reduce((result, account) => {
+    const bestRating = ratings[account].reduce((result, rating) => {
+      return result.rating > rating.rating ? result : rating
+    }, {})
+    return result.rating > bestRating.rating ? result : bestRating
+  }, {})
+})
 
 const flakyGenerator = () => {
   return new Promise((resolve, reject) => {
@@ -112,17 +149,17 @@ function* nameLoader(card) {
   const account = faker.finance.account()
   const record = { card, name, account }
   yield put({
-    type: 'transactions / cardholder',
+    type: CARDHOLDER,
     payload: { record }
   })
-  const ratings = yield race([
+  const ratings = yield all([
     call(firstCreditAgency, record),
     call(secondCreditAgency, record),
     call(bestCreditAgency, record)
   ])
   yield put({
-    type: 'transactions / ratings',
-    payload: { ratings }
+    type: RATINGS,
+    payload: { account, ratings }
   })
 }
 
